@@ -1,0 +1,84 @@
+#+title: Data: Model Predictive Control for Optimal Operation of District Heating Networks with Uncertain Consumer Heat Demand Forecasting
+
+* Code
+
+The code is in =mpc=. The scripts =main.py= and =work.py= are also included.
+[[https://docs.astral.sh/uv/][uv]] is used for package management, so you can run the scripts with
+
+#+begin_src shell
+uv run main.py
+#+end_src
+
+The data in this repository was obtained using the district heating simulation core =pydistrictheating-core= from the [[https://www.itwm.fraunhofer.de/en/departments/processes-materials/products-services/software-ad-net-heat-district-heating.html][AD Net Heat]] software developed at Fraunhofer ITWM.
+As the software is subject to intellectual property restrictions, we can release neither its source code nor the compiled package.
+Therefore, the code in this repository does not fully work.
+By implementing the =Simulator= class in =mpc/simulator/__init__.py= for your own district heating simulator, you can reproduce the simulation results.
+
+* Consumer Heat Demand Forecasting
+
+The data for consumer heat demand forecasting is in =data/Profiles=.
+
+- =consumer_cluster_data= aggregated consumer cluster data
+- =models= LightGBM forecasting models
+
+* Network Data
+
+The data for network simulation is in =data/aroma_mpc=.
+
+- =system.json= the topology of the Aroma network
+- =scenario.json= simulation settings and placeholder signals (overwritten at runtime)
+
+* Simulation Results
+
+The result data is in =data/results=.
+
+** Comparison of Different Prediction Horizons
+
+The optimization results are in =data/results/actual-no-buffer-12-steps-slsqp-ftol+10=.
+They were generated with the script =data/results/run-batch-mpc-optimizations.sh=.
+They were then evaluated with the command
+
+#+begin_src shell
+uv run main.py generate-horizon-comparison-images
+#+end_src
+
+** Comparison of Different Optimization Strategies
+
+The simulation results are in =data/results/compare=.
+They were generated and evaluated with the command
+
+#+begin_src shell
+uv run work.py
+#+end_src
+
+The control signals in the =work.py= file were generated with the commands
+
+#+begin_src shell
+uv run main.py run-open-loop --horizon-hours 28 --mode actual
+uv run main.py run-open-loop --horizon-hours 28
+uv run main.py run-mpc
+#+end_src
+
+The resulting controls were then copied into the =work.py= script.
+
+** Multiple Day Experiments
+
+The optimization evaluations are in =data/results/multi-day=.
+The =day-optimization-results-*= files were generated with the command
+
+#+begin_src shell
+uv run main.py run-multiple-day-experiment --num-days 30
+#+end_src
+
+They were then evaluated with the command
+
+#+begin_src shell
+uv run main.py evaluate-multiple-day-experiment --num-days 30
+#+end_src
+
+This generates the =day-evaluations-*= files.
+Finally, the plot for the statistical evaluation was generated with
+
+#+begin_src shell
+uv run main.py plot-multiple-day-experiment-evaluation-distributions --num-days 30
+#+end_src

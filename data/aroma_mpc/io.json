@@ -1,0 +1,11 @@
+{
+    "output": [
+        "all"
+    ],
+    "control": {
+        "S0_temperature": [
+            60,
+            120
+        ]
+    }
+}

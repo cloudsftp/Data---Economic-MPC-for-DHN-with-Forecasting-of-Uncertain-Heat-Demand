@@ -1,0 +1,766 @@
+{
+  "nodes": {
+    "RL0": {
+      "position": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL1": {
+      "position": [
+        500.0,
+        1.0,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL1_PR10_0": {
+      "position": [
+        333.33333333333337,
+        1.0,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL2": {
+      "position": [
+        750.0,
+        -432.0127018922193,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL2_PR21_0": {
+      "position": [
+        666.6666666666666,
+        -287.6751345948129,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL3": {
+      "position": [
+        1250.0,
+        -432.0127018922193,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL3_PR32_0": {
+      "position": [
+        1083.3333333333333,
+        -432.0127018922193,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL4": {
+      "position": [
+        1500.0,
+        1.0,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL4_PR43_0": {
+      "position": [
+        1416.6666666666667,
+        -143.33756729740642,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL4_PR47_0": {
+      "position": [
+        1416.6666666666667,
+        145.33756729740642,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL5": {
+      "position": [
+        2000.0,
+        1.0,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL5_PR54_0": {
+      "position": [
+        1833.3333333333333,
+        1.0,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL6": {
+      "position": [
+        750.0,
+        434.0127018922193,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL6_PR61_0": {
+      "position": [
+        666.6666666666666,
+        289.6751345948129,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL7": {
+      "position": [
+        1250.0,
+        434.0127018922193,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL7_PR76_0": {
+      "position": [
+        1083.3333333333333,
+        434.0127018922193,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL8": {
+      "position": [
+        1500.0,
+        867.0254037844386,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "RL8_PR87_0": {
+      "position": [
+        1416.6666666666667,
+        722.6878364870322,
+        0.0
+      ],
+      "part": null,
+      "is_feed": false
+    },
+    "VL0": {
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL0_PV01_0": {
+      "position": [
+        166.66666666666666,
+        0.0,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL1": {
+      "position": [
+        500.0,
+        0.0,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL1_PV12_0": {
+      "position": [
+        583.3333333333334,
+        -144.33756729740642,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL1_PV16_0": {
+      "position": [
+        583.3333333333334,
+        144.33756729740642,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL2": {
+      "position": [
+        750.0,
+        -433.0127018922193,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL2_PV23_0": {
+      "position": [
+        916.6666666666666,
+        -433.0127018922193,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL3": {
+      "position": [
+        1250.0,
+        -433.0127018922193,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL3_PV34_0": {
+      "position": [
+        1333.3333333333333,
+        -288.6751345948129,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL4": {
+      "position": [
+        1500.0,
+        0.0,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL4_PV45_0": {
+      "position": [
+        1666.6666666666667,
+        0.0,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL5": {
+      "position": [
+        2000.0,
+        0.0,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL6": {
+      "position": [
+        750.0,
+        433.0127018922193,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL6_PV67_0": {
+      "position": [
+        916.6666666666666,
+        433.0127018922193,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL7": {
+      "position": [
+        1250.0,
+        433.0127018922193,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL7_PV74_0": {
+      "position": [
+        1333.3333333333333,
+        288.6751345948129,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL7_PV78_0": {
+      "position": [
+        1333.3333333333333,
+        577.3502691896257,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    },
+    "VL8": {
+      "position": [
+        1500.0,
+        866.0254037844386,
+        0.0
+      ],
+      "part": null,
+      "is_feed": true
+    }
+  },
+  "pipes": {
+    "PR10_0": {
+      "length": 250.0,
+      "diameter": 223.60679774997897,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL1",
+        "RL1_PR10_0"
+      ]
+    },
+    "PR10_1": {
+      "length": 250.0,
+      "diameter": 223.60679774997897,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL1_PR10_0",
+        "RL0"
+      ]
+    },
+    "PR21_0": {
+      "length": 250.0,
+      "diameter": 158.11388300841898,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL2",
+        "RL2_PR21_0"
+      ]
+    },
+    "PR21_1": {
+      "length": 250.0,
+      "diameter": 158.11388300841898,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL2_PR21_0",
+        "RL1"
+      ]
+    },
+    "PR32_0": {
+      "length": 250.0,
+      "diameter": 122.4744871391589,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL3",
+        "RL3_PR32_0"
+      ]
+    },
+    "PR32_1": {
+      "length": 250.0,
+      "diameter": 122.4744871391589,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL3_PR32_0",
+        "RL2"
+      ]
+    },
+    "PR43_0": {
+      "length": 250.0,
+      "diameter": 70.71067811865476,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL4",
+        "RL4_PR43_0"
+      ]
+    },
+    "PR43_1": {
+      "length": 250.0,
+      "diameter": 70.71067811865476,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL4_PR43_0",
+        "RL3"
+      ]
+    },
+    "PR47_0": {
+      "length": 250.0,
+      "diameter": 70.71067811865476,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL4",
+        "RL4_PR47_0"
+      ]
+    },
+    "PR47_1": {
+      "length": 250.0,
+      "diameter": 70.71067811865476,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL4_PR47_0",
+        "RL7"
+      ]
+    },
+    "PR54_0": {
+      "length": 250.0,
+      "diameter": 100.0,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL5",
+        "RL5_PR54_0"
+      ]
+    },
+    "PR54_1": {
+      "length": 250.0,
+      "diameter": 100.0,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL5_PR54_0",
+        "RL4"
+      ]
+    },
+    "PR61_0": {
+      "length": 250.0,
+      "diameter": 158.11388300841898,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL6",
+        "RL6_PR61_0"
+      ]
+    },
+    "PR61_1": {
+      "length": 250.0,
+      "diameter": 158.11388300841898,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL6_PR61_0",
+        "RL1"
+      ]
+    },
+    "PR76_0": {
+      "length": 250.0,
+      "diameter": 122.4744871391589,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL7",
+        "RL7_PR76_0"
+      ]
+    },
+    "PR76_1": {
+      "length": 250.0,
+      "diameter": 122.4744871391589,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL7_PR76_0",
+        "RL6"
+      ]
+    },
+    "PR87_0": {
+      "length": 250.0,
+      "diameter": 100.0,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL8",
+        "RL8_PR87_0"
+      ]
+    },
+    "PR87_1": {
+      "length": 250.0,
+      "diameter": 100.0,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "RL8_PR87_0",
+        "RL7"
+      ]
+    },
+    "PV01_0": {
+      "length": 250.0,
+      "diameter": 223.60679774997897,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL0",
+        "VL0_PV01_0"
+      ]
+    },
+    "PV01_1": {
+      "length": 250.0,
+      "diameter": 223.60679774997897,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL0_PV01_0",
+        "VL1"
+      ]
+    },
+    "PV12_0": {
+      "length": 250.0,
+      "diameter": 158.11388300841898,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL1",
+        "VL1_PV12_0"
+      ]
+    },
+    "PV12_1": {
+      "length": 250.0,
+      "diameter": 158.11388300841898,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL1_PV12_0",
+        "VL2"
+      ]
+    },
+    "PV16_0": {
+      "length": 250.0,
+      "diameter": 158.11388300841898,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL1",
+        "VL1_PV16_0"
+      ]
+    },
+    "PV16_1": {
+      "length": 250.0,
+      "diameter": 158.11388300841898,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL1_PV16_0",
+        "VL6"
+      ]
+    },
+    "PV23_0": {
+      "length": 250.0,
+      "diameter": 122.4744871391589,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL2",
+        "VL2_PV23_0"
+      ]
+    },
+    "PV23_1": {
+      "length": 250.0,
+      "diameter": 122.4744871391589,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL2_PV23_0",
+        "VL3"
+      ]
+    },
+    "PV34_0": {
+      "length": 250.0,
+      "diameter": 70.71067811865476,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL3",
+        "VL3_PV34_0"
+      ]
+    },
+    "PV34_1": {
+      "length": 250.0,
+      "diameter": 70.71067811865476,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL3_PV34_0",
+        "VL4"
+      ]
+    },
+    "PV45_0": {
+      "length": 250.0,
+      "diameter": 100.0,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL4",
+        "VL4_PV45_0"
+      ]
+    },
+    "PV45_1": {
+      "length": 250.0,
+      "diameter": 100.0,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL4_PV45_0",
+        "VL5"
+      ]
+    },
+    "PV67_0": {
+      "length": 250.0,
+      "diameter": 122.4744871391589,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL6",
+        "VL6_PV67_0"
+      ]
+    },
+    "PV67_1": {
+      "length": 250.0,
+      "diameter": 122.4744871391589,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL6_PV67_0",
+        "VL7"
+      ]
+    },
+    "PV74_0": {
+      "length": 250.0,
+      "diameter": 70.71067811865476,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL7",
+        "VL7_PV74_0"
+      ]
+    },
+    "PV74_1": {
+      "length": 250.0,
+      "diameter": 70.71067811865476,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL7_PV74_0",
+        "VL4"
+      ]
+    },
+    "PV78_0": {
+      "length": 250.0,
+      "diameter": 100.0,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL7",
+        "VL7_PV78_0"
+      ]
+    },
+    "PV78_1": {
+      "length": 250.0,
+      "diameter": 100.0,
+      "transmittance": 0.5,
+      "roughness": 0.047,
+      "zeta": 0.0,
+      "nodes": [
+        "VL7_PV78_0",
+        "VL8"
+      ]
+    }
+  },
+  "consumers": {
+    "C1": {
+      "nodes": [
+        "VL2",
+        "RL2"
+      ]
+    },
+    "C2": {
+      "nodes": [
+        "VL3",
+        "RL3"
+      ]
+    },
+    "C5": {
+      "nodes": [
+        "VL5",
+        "RL5"
+      ]
+    },
+    "C3": {
+      "nodes": [
+        "VL6",
+        "RL6"
+      ]
+    },
+    "C4": {
+      "nodes": [
+        "VL8",
+        "RL8"
+      ]
+    }
+  },
+  "sources": {
+    "S0": {
+      "nodes": [
+        "RL0",
+        "VL0"
+      ]
+    }
+  }
+}
