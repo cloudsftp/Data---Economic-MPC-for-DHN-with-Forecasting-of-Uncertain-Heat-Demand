@@ -328,7 +328,7 @@
   "pipes": {
     "PR10_0": {
       "length": 250.0,
-      "diameter": 223.60679774997897,
+      "diameter": 160.3,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -339,7 +339,7 @@
     },
     "PR10_1": {
       "length": 250.0,
-      "diameter": 223.60679774997897,
+      "diameter": 160.3,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -350,7 +350,7 @@
     },
     "PR21_0": {
       "length": 250.0,
-      "diameter": 158.11388300841898,
+      "diameter": 107.2,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -361,7 +361,7 @@
     },
     "PR21_1": {
       "length": 250.0,
-      "diameter": 158.11388300841898,
+      "diameter": 107.2,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -372,7 +372,7 @@
     },
     "PR32_0": {
       "length": 250.0,
-      "diameter": 122.4744871391589,
+      "diameter": 82.5,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -383,7 +383,7 @@
     },
     "PR32_1": {
       "length": 250.0,
-      "diameter": 122.4744871391589,
+      "diameter": 82.5,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -394,7 +394,7 @@
     },
     "PR43_0": {
       "length": 250.0,
-      "diameter": 70.71067811865476,
+      "diameter": 53.9,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -405,7 +405,7 @@
     },
     "PR43_1": {
       "length": 250.0,
-      "diameter": 70.71067811865476,
+      "diameter": 53.9,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -416,7 +416,7 @@
     },
     "PR47_0": {
       "length": 250.0,
-      "diameter": 70.71067811865476,
+      "diameter": 53.9,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -427,7 +427,7 @@
     },
     "PR47_1": {
       "length": 250.0,
-      "diameter": 70.71067811865476,
+      "diameter": 53.9,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -438,7 +438,7 @@
     },
     "PR54_0": {
       "length": 250.0,
-      "diameter": 100.0,
+      "diameter": 70,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -449,7 +449,7 @@
     },
     "PR54_1": {
       "length": 250.0,
-      "diameter": 100.0,
+      "diameter": 70,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -460,7 +460,7 @@
     },
     "PR61_0": {
       "length": 250.0,
-      "diameter": 158.11388300841898,
+      "diameter": 107.2,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -471,7 +471,7 @@
     },
     "PR61_1": {
       "length": 250.0,
-      "diameter": 158.11388300841898,
+      "diameter": 107.2,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -482,7 +482,7 @@
     },
     "PR76_0": {
       "length": 250.0,
-      "diameter": 122.4744871391589,
+      "diameter": 82.5,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -493,7 +493,7 @@
     },
     "PR76_1": {
       "length": 250.0,
-      "diameter": 122.4744871391589,
+      "diameter": 82.5,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -504,7 +504,7 @@
     },
     "PR87_0": {
       "length": 250.0,
-      "diameter": 100.0,
+      "diameter": 70,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -515,7 +515,7 @@
     },
     "PR87_1": {
       "length": 250.0,
-      "diameter": 100.0,
+      "diameter": 70,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -526,7 +526,7 @@
     },
     "PV01_0": {
       "length": 250.0,
-      "diameter": 223.60679774997897,
+      "diameter": 160.3,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -537,7 +537,7 @@
     },
     "PV01_1": {
       "length": 250.0,
-      "diameter": 223.60679774997897,
+      "diameter": 160.3,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -548,7 +548,7 @@
     },
     "PV12_0": {
       "length": 250.0,
-      "diameter": 158.11388300841898,
+      "diameter": 107.2,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -559,7 +559,7 @@
     },
     "PV12_1": {
       "length": 250.0,
-      "diameter": 158.11388300841898,
+      "diameter": 107.2,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -570,7 +570,7 @@
     },
     "PV16_0": {
       "length": 250.0,
-      "diameter": 158.11388300841898,
+      "diameter": 107.2,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -581,7 +581,7 @@
     },
     "PV16_1": {
       "length": 250.0,
-      "diameter": 158.11388300841898,
+      "diameter": 107.2,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -592,7 +592,7 @@
     },
     "PV23_0": {
       "length": 250.0,
-      "diameter": 122.4744871391589,
+      "diameter": 82.5,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -603,7 +603,7 @@
     },
     "PV23_1": {
       "length": 250.0,
-      "diameter": 122.4744871391589,
+      "diameter": 82.5,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -614,7 +614,7 @@
     },
     "PV34_0": {
       "length": 250.0,
-      "diameter": 70.71067811865476,
+      "diameter": 53.9,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -625,7 +625,7 @@
     },
     "PV34_1": {
       "length": 250.0,
-      "diameter": 70.71067811865476,
+      "diameter": 53.9,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -636,7 +636,7 @@
     },
     "PV45_0": {
       "length": 250.0,
-      "diameter": 100.0,
+      "diameter": 70,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -647,7 +647,7 @@
     },
     "PV45_1": {
       "length": 250.0,
-      "diameter": 100.0,
+      "diameter": 70,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -658,7 +658,7 @@
     },
     "PV67_0": {
       "length": 250.0,
-      "diameter": 122.4744871391589,
+      "diameter": 82.5,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -669,7 +669,7 @@
     },
     "PV67_1": {
       "length": 250.0,
-      "diameter": 122.4744871391589,
+      "diameter": 82.5,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -680,7 +680,7 @@
     },
     "PV74_0": {
       "length": 250.0,
-      "diameter": 70.71067811865476,
+      "diameter": 53.9,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -691,7 +691,7 @@
     },
     "PV74_1": {
       "length": 250.0,
-      "diameter": 70.71067811865476,
+      "diameter": 53.9,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -702,7 +702,7 @@
     },
     "PV78_0": {
       "length": 250.0,
-      "diameter": 100.0,
+      "diameter": 70,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,
@@ -713,7 +713,7 @@
     },
     "PV78_1": {
       "length": 250.0,
-      "diameter": 100.0,
+      "diameter": 70,
       "transmittance": 0.5,
       "roughness": 0.047,
       "zeta": 0.0,

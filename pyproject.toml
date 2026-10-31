@@ -6,6 +6,8 @@ readme = "README.md"
 requires-python = ">=3.13.0, <3.14"
 dependencies = [
     #"pydistrictheating-core==0.3.3",
+    #"rimulation>=0.5.0",
+    #"dh-types>=0.1.0",
     "pandas",
     "scipy>=1.16.1",
     "matplotlib>=3.10.6",
@@ -25,8 +27,10 @@ dev = [
 ]
 
 #[[tool.uv.index]]
-#url = "https://***:***@gitlab.cc-asp.fraunhofer.de/api/v4/projects/***/packages/pypi/simple"
+#url = "https://***:***@gitlab.cc-asp.fraunhofer.de/api/v4/projects/83517/packages/pypi/simple"
 
 # For local development:
 #[tool.uv.sources]
-#pydistrictheating-core = { path = "../EMO/release-core/soft/python/core" }
+#pydistrictheating-core = { path = "../EMO/districtheating/soft/python/core" }
+#rimulation = { path = "../../Dissertation/latest/rimulation/bindings", editable = true }
+#dh-types = { path = "../../Dissertation/latest/python/dh-types", editable = true }

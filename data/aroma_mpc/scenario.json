@@ -4,7 +4,7 @@
     "return_temperature [C]": 60.0,
     "ground_temperature [C]": 10.0,
     "t_start [d]": 0.0,
-    "t_end [d]": 2.0,
+    "t_end [d]": 1.0,
     "dt [min]": 15.0,
     "num_iter": 50,
     "tol": 1e-06,
@@ -13,27 +13,27 @@
   "consumers": {
     "C1": {
       "input": "C1_input",
-      "annual_consumption": 500.0,
+      "annual_consumption": 250.0,
       "return_temperature": 60.0
     },
     "C2": {
       "input": "C2_input",
-      "annual_consumption": 500.0,
+      "annual_consumption": 250.0,
       "return_temperature": 60.0
     },
     "C3": {
       "input": "C3_input",
-      "annual_consumption": 500.0,
+      "annual_consumption": 250.0,
       "return_temperature": 60.0
     },
     "C4": {
       "input": "C4_input",
-      "annual_consumption": 500.0,
+      "annual_consumption": 250.0,
       "return_temperature": 60.0
     },
     "C5": {
       "input": "C5_input",
-      "annual_consumption": 500.0,
+      "annual_consumption": 250.0,
       "return_temperature": 60.0
     }
   },
@@ -331,6 +331,10 @@
         [
           1680.0,
           0.5232
+        ],
+        [
+          1740.0,
+          0.5232
         ]
       ]
     },
@@ -462,6 +466,10 @@
         ],
         [
           1680.0,
+          0.5232
+        ],
+        [
+          1740.0,
           0.5232
         ]
       ]
@@ -595,6 +603,10 @@
         [
           1680.0,
           0.5232
+        ],
+        [
+          1740.0,
+          0.5232
         ]
       ]
     },
@@ -726,6 +738,10 @@
         ],
         [
           1680.0,
+          0.5232
+        ],
+        [
+          1740.0,
           0.5232
         ]
       ]
@@ -859,6 +875,10 @@
         [
           1680.0,
           0.5232
+        ],
+        [
+          1740.0,
+          0.5232
         ]
       ]
     },
@@ -990,6 +1010,10 @@
         ],
         [
           1680.0,
+          79.52
+        ],
+        [
+          1740.0,
           79.52
         ]
       ]

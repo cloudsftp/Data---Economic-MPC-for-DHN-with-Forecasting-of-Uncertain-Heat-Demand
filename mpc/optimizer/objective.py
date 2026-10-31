@@ -8,7 +8,7 @@ from mpc.simulator import Simulator
 
 ALPHA = 1.0e1
 BETA = 1.0e0
-GAMMA = 1.0e-6
+GAMMA = 0
 
 
 class ObjectiveFunction(Protocol):

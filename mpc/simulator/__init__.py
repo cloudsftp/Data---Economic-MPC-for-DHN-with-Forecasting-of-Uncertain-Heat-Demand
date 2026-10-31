@@ -22,7 +22,7 @@ DEFAULT_TIME_STEP = 15 * MINUTES
 MINIMAL_TIME_STEP = 1 * MINUTES
 TIME_UNIT = 1 * SECONDS
 
-SIGNAL_LENGTH = 29
+SIGNAL_LENGTH = 30
 
 CACHE_SIZE = 256
 
@@ -59,11 +59,12 @@ class Simulator:
         previous_demands: dict[str, list[float]],
         simulation_duration: int,
         num_skip_temp_constraints: int,
+        hours_ensure_constraints: int,
         min_temperature: float,
     ) -> None:
         self._num_skip_temp_constraints = num_skip_temp_constraints
         self._min_temperature = min_temperature
-        self.simulation_duration = simulation_duration
+        self.simulation_duration = simulation_duration + hours_ensure_constraints
 
         network_directory = network_directory.absolute()
         logger.trace(f"network directory: {network_directory}")

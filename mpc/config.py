@@ -44,6 +44,7 @@ def get_demand_provider(
     mode: FutureDataMode,
     base_hour: int,
     horizon_hours: int,
+    prediction_update_hours: int = 1,
 ) -> DemandProviderI:
     num_points = horizon_hours + 1
 
@@ -54,6 +55,7 @@ def get_demand_provider(
                 CLUSTER_CONFIG,
                 base_hour,
                 num_points,
+                prediction_update_hours,
             )
         case FutureDataMode.Actual:
             demand_provider = HistoricalDemandProvider(

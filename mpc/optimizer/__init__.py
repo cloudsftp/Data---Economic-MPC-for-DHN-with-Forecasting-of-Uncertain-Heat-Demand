@@ -34,6 +34,9 @@ class OptimizationResult:
 
     time: float
     iterations: int
+    success: bool
+    status: int
+    message: str
 
 
 class Optimizer:
@@ -67,6 +70,7 @@ class Optimizer:
         min_temperature: float,
         report_intermediate_result: Optional[Callable[[OptimizerUpdate], None]] = None,
         hours_ignore_temp_constraints: float = 3.5,
+        hours_ensure_constraints: int = 0,
     ):
         self._objective_function = objective_function
 
@@ -81,6 +85,7 @@ class Optimizer:
             previous_demands,
             simulation_duration_hours * HOURS,
             self._num_skip_temp_constraints,
+            hours_ensure_constraints,
             min_temperature,
         )
         self._num_consumer_temperatures = self._simulator.num_consumers * (
@@ -159,7 +164,7 @@ class Optimizer:
             callback=callback,
             options={
                 "ftol": self._ftol,
-                "maxiter": 10,
+                "maxiter": 15,
             },
         )
 
@@ -182,6 +187,9 @@ class Optimizer:
             self._optimized,
             duration,
             iterations,
+            result.success,
+            result.status,
+            result.message,
         )
 
     def advance_step(

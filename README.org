@@ -57,6 +57,9 @@ The control signals in the =work.py= file were generated with the commands
 uv run main.py run-open-loop --horizon-hours 28 --mode actual
 uv run main.py run-open-loop --horizon-hours 28
 uv run main.py run-mpc
+uv run main.py run-mpc --horizon-hours 28
+uv run main.py run-mpc --predicion-update-hours 24
+uv run main.py run-curve
 #+end_src
 
 The resulting controls were then copied into the =work.py= script.
