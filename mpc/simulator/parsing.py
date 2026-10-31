@@ -19,7 +19,11 @@ class ResultEvaluation:
     min_temperature_gradients: np.ndarray
 
     min_temperature_violation: np.float64
-    min_temperature_violation_gradients: np.ndarray
+
+    heat_fed_in: np.float64
+    heat_delivered: np.float64
+    heat_loss: np.float64
+    pump_energy: np.float64
 
     result: pd.DataFrame
 
@@ -107,6 +111,17 @@ def evaluate_results(
             columns,
         )
     )
+    source_names = list(
+        set(
+            map(
+                lambda v: v.split(".")[0],
+                filter(
+                    lambda v: v.startswith("S"),
+                    columns,
+                ),
+            )
+        )
+    )
 
     controls = list(
         set(
@@ -122,6 +137,20 @@ def evaluate_results(
     logger.trace(f"controls: {controls}")
 
     min_energy_density = energy_density(min_temperature)
+
+    heat_fed_in = _compute_energy_fed_in(
+        outputs,
+        source_variables,
+    )
+    heat_delivered = _compute_energy_delivered(
+        outputs,
+        consumer_power_variables,
+    )
+    heat_loss = heat_fed_in - heat_delivered
+    pump_energy = _compute_pump_energy(
+        outputs,
+        source_names,
+    )
 
     return ResultEvaluation(
         _compute_objective(outputs, source_variables, consumer_power_variables),
@@ -148,11 +177,10 @@ def evaluate_results(
             min_temperature_consumer_variable,
             min_energy_density,
         ),
-        _compute_min_temperature_violation_gradients(
-            outputs,
-            min_temperature_consumer_variable,
-            min_energy_density,
-        ),
+        heat_fed_in,
+        heat_delivered,
+        heat_loss,
+        pump_energy,
         outputs,
     )
 
@@ -249,22 +277,53 @@ def _compute_min_temperature_violation(
     energies *= -1
 
     def activation(value):
-        return np.logaddexp(0, value)
+        return np.maximum(0, value)
 
     energies = energies.map(lambda e: activation(e))
 
     return integrate.trapezoid(energies, outputs.index)
 
 
-def _compute_min_temperature_violation_gradients(
+def _compute_energy_fed_in(
     outputs: pd.DataFrame,
-    variable: str,
-    min_energy_density: float,
-) -> np.ndarray:
-    # outputs = outputs.iloc[num_skip_temp_constaints:]
+    source_variables: list[str],
+) -> np.float64:
+    logger.trace(f"source energies: {outputs[source_variables].sum(axis=1)}")
+    source_energy = integrate.trapezoid(
+        -1 * outputs[source_variables].sum(axis=1),
+        dx=1 / 4,
+    )
 
-    energies = outputs[variable]
-    energies -= min_energy_density
+    return source_energy
 
-    # TODO: implement
-    return np.array([[]])
+
+def _compute_energy_delivered(
+    outputs: pd.DataFrame,
+    consumer_power_variables: list[str],
+) -> np.float64:
+    logger.trace(f"consumer energies: {outputs[consumer_power_variables].sum(axis=1)}")
+    source_energy = integrate.trapezoid(
+        outputs[consumer_power_variables].sum(axis=1),
+        dx=1 / 4,
+    )
+
+    return source_energy
+
+
+def _compute_pump_energy(
+    outputs: pd.DataFrame,
+    source_names: list[str],
+) -> np.float64:
+    energy = np.float64(0)
+
+    for name in source_names:
+        _energy = integrate.trapezoid(
+            outputs[f"{name}.0.q"]
+            / 1_000
+            * (outputs[f"{name}.1.p"] - outputs[f"{name}.0.p"]),
+            dx=1 / 4,
+        )
+        logger.debug(f"pump energy of {name}: {_energy} (total so far: {energy})")
+        energy += _energy
+
+    return energy

@@ -7,11 +7,25 @@ from mpc.profiles.multi_consumer_forecast import (
 )
 
 
-def shorten_demands(demands: dict[str, list[float]], n: int) -> dict[str, list[float]]:
+def shorten_demands(
+    demands: dict[str, list[float]],
+    skip: int,
+    length: int,
+) -> dict[str, list[float]]:
     for name in demands:
-        demands[name] = demands[name][:n]
+        demands[name] = demands[name][skip : skip + length]
 
     return demands
+
+
+def concatenate_demands(
+    a: dict[str, list[float]],
+    b: dict[str, list[float]],
+) -> dict[str, list[float]]:
+    for name in a:
+        a[name] = a[name] + b[name]
+
+    return a
 
 
 class DemandProviderI(Protocol):
@@ -34,12 +48,16 @@ class DemandProvider(DemandProviderI):
     hour: int
     window: int
 
+    prediction_update_hours: int
+    prediction_update_counter: int = 0
+
     def __init__(
         self,
         data_directory: Path,
         cluster_config: dict[str, ClusterConfig],
         base_hour: int,
         window: int,
+        prediction_update_hours: int,
     ):
         self.hour = base_hour
         self.window = window
@@ -47,6 +65,8 @@ class DemandProvider(DemandProviderI):
             data_directory,
             cluster_config,
         )
+
+        self.prediction_update_hours = prediction_update_hours
 
     def get_previous_demands(self) -> dict[str, list[float]]:
         return self.demand_forecaster.get_previous_real_data(
@@ -62,25 +82,30 @@ class DemandProvider(DemandProviderI):
 
     def get_predicted_future_demands(self) -> dict[str, list[float]]:
         actual_demand_start = self.demand_forecaster.get_future_real_data(
-            self.hour,
+            self.hour - self.prediction_update_counter,
             1,
         )
 
         predicted_demands = self.demand_forecaster.get_demands_for_hour(
-            self.hour + 1,
+            self.hour - self.prediction_update_counter + 1,
+        )
+        predicted_demands = concatenate_demands(
+            actual_demand_start,
+            predicted_demands,
         )
         predicted_demands = shorten_demands(
             predicted_demands,
-            self.window - 1,
+            self.prediction_update_counter,
+            self.window,
         )
-
-        for key in predicted_demands:
-            predicted_demands[key] = actual_demand_start[key] + predicted_demands[key]
 
         return predicted_demands
 
     def advance_step(self):
         self.hour += 1
+
+        self.prediction_update_counter += 1
+        self.prediction_update_counter %= self.prediction_update_hours
 
     def assert_enough_data_available(self, mpc_steps: int):
         min_feature_length = min(

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+import json
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Sequence
 
+from loguru import logger
 import numpy as np
 from scipy import stats
 from serde.json import to_json, from_json
@@ -15,17 +17,20 @@ from mpc.config import (
     FutureDataMode,
     get_demand_provider,
 )
-from mpc.water import MIN_TEMPERATURE, temperature
+from mpc.curve import Curve
+from mpc.water import MIN_TEMPERATURE, MIN_TEMPERATURE_W_BUFFER, temperature
 from mpc.optimizer import Optimizer
 from mpc.optimizer.objective import J1, J2
-from mpc.mpc import MPC
+from mpc.mpc import MPC, MPCResult
 from mpc.simulator import Simulator
 from mpc.simulator.parsing import (
+    ResultEvaluation,
     _read_output_csv,
+    evaluate_results,
 )
 
-CONSTANT_TEMPERATURE = 74.0
-INITIAL_TEMPERATURE = 75.0
+CONSTANT_TEMPERATURE = 76.0
+INITIAL_TEMPERATURE = 76.0
 
 FULL_DAY_HORIZON_HOURS = 24
 FULL_DAY_HORIZON_HOURS_EXTENDED = 28
@@ -42,17 +47,32 @@ def run_experiments(
     start_day_offset: int,
     num_days: int,
     output_directory: Path,
+    skip_opt: bool,
 ) -> None:
     output_directory.mkdir(parents=True, exist_ok=True)
 
     for day in range(start_day_offset, num_days):
-        experiment_output_file = (
-            output_directory / f"day-optimization-results-{day:02d}.json"
-        )
         day_optimization_results = run_experiment(
             day,
             initial_base_hour + day * 24,
+            skip_opt,
         )
+
+        experiment_output_file = (
+            output_directory / f"day-optimization-results-{day:02d}.json"
+        )
+        if skip_opt:
+            tmp_optimization_results = day_optimization_results
+
+            with open(experiment_output_file, "r") as f:
+                day_optimization_results = from_json(DayOptimizationResults, f.read())
+
+            day_optimization_results.control_curve = (
+                tmp_optimization_results.control_curve
+            )
+            day_optimization_results.previous_control_curve = (
+                tmp_optimization_results.previous_control_curve
+            )
 
         with open(experiment_output_file, "w") as f:
             f.write(to_json(day_optimization_results, indent=2))
@@ -63,6 +83,10 @@ class Evaluation:
     control: list[float]
     objective: float
     modified_objective: float
+    heat_fed_in: float
+    heat_delivered: float
+    heat_loss: float
+    pump_energy: float
     maximum: float
     area: float
 
@@ -72,50 +96,95 @@ class DayEvaluations:
     day: int
     base_hour: int
     previous_control_no_buffer: list[float]
-    # evaluation_open_loop_real: Evaluation
     evaluation_open_loop_forecasted: Evaluation
+    evaluation_open_loop_forecasted_w_buffer: Evaluation
     evaluation_mpc_no_buffer: Evaluation
-    # evaluation_mpc_with_buffer: Evaluation
+    evaluation_curve: Evaluation
 
 
 @dataclass
 class DayOptimizationResults:
     day: int
     base_hour: int
-    previous_control_no_buffer: list[float]
-    # control_open_loop_real: list[float]
-    control_open_loop_forecasted: list[float]
-    control_mpc_no_buffer: list[float]
-    # control_mpc_with_buffer: list[float]
+    previous_control_no_buffer: list[float] = field(default_factory=list)
+    previous_control_w_buffer: list[float] = field(default_factory=list)
+    previous_control_curve: list[float] = field(default_factory=list)
+    control_open_loop_forecasted: list[float] = field(default_factory=list)
+    control_open_loop_forecasted_w_buffer: list[float] = field(default_factory=list)
+    control_mpc_no_buffer: list[float] = field(default_factory=list)
+    times_mpc: list[float] = field(default_factory=list)
+    iterations_mpc: list[int] = field(default_factory=list)
+    successes_mpc: list[bool] = field(default_factory=list)
+    stati_mpc: list[int] = field(default_factory=list)
+    messages_mpc: list[str] = field(default_factory=list)
+    control_curve: list[float] = field(default_factory=list)
 
 
 def run_experiment(
     day: int,
     base_hour: int,
+    skip_opt: bool,
 ) -> DayOptimizationResults:
-    previous_control_no_buffer = compute_previous_control(
-        base_hour,
-        MIN_TEMPERATURE,
-    )
+    if not skip_opt:
+        previous_control_no_buffer = compute_previous_control(
+            base_hour,
+            MIN_TEMPERATURE,
+        )
+        previous_control_w_buffer = compute_previous_control(
+            base_hour,
+            MIN_TEMPERATURE_W_BUFFER,
+        )
 
-    control_open_loop_forecasted = run_open_loop(
-        FutureDataMode.Forecasted,
-        base_hour,
-        previous_control_no_buffer,
-        MIN_TEMPERATURE,
-    )
-    control_mpc_no_buffer = run_mpc(
-        base_hour,
-        previous_control_no_buffer,
-        MIN_TEMPERATURE,
-    )
+        control_open_loop_forecasted = run_open_loop(
+            FutureDataMode.Forecasted,
+            base_hour,
+            previous_control_no_buffer,
+            MIN_TEMPERATURE,
+        )
+        control_open_loop_forecasted_w_buffer = run_open_loop(
+            FutureDataMode.Forecasted,
+            base_hour,
+            previous_control_w_buffer,
+            MIN_TEMPERATURE_W_BUFFER,
+        )
+
+        mpc_result = run_mpc(
+            base_hour,
+            previous_control_no_buffer,
+            MIN_TEMPERATURE,
+        )
+        control_mpc_no_buffer = mpc_result.optimal_control[
+            1 : FULL_DAY_HORIZON_HOURS + 1
+        ]
+
+    else:
+        previous_control_no_buffer = []
+        previous_control_w_buffer = []
+
+        control_open_loop_forecasted = []
+        control_open_loop_forecasted_w_buffer = []
+
+        mpc_result = MPCResult([], [], [], [], [], [], [])
+        control_mpc_no_buffer = []
+
+    control_curve = Curve(base_hour).control()
+    previous_control_curve = Curve(base_hour - 24).control()
 
     return DayOptimizationResults(
         day,
         base_hour,
         previous_control_no_buffer,
+        previous_control_w_buffer,
+        previous_control_curve,
         control_open_loop_forecasted,
+        control_open_loop_forecasted_w_buffer,
         control_mpc_no_buffer,
+        mpc_result.times,
+        mpc_result.iterations,
+        mpc_result.successes,
+        mpc_result.stati,
+        mpc_result.messages,
+        control_curve,
     )
 
 
@@ -188,7 +257,7 @@ def run_mpc(
     base_hour: int,
     previous_control: list[float],
     min_temperature: float,
-) -> list[float]:
+) -> MPCResult:
     horizon_hours = MPC_HORIZON_HOURS
     num_controls = horizon_hours
 
@@ -211,16 +280,15 @@ def run_mpc(
         num_steps,
         min_temperature,
     )
-    mpc_results = mpc.run()
-
-    return mpc_results.optimal_control[1 : FULL_DAY_HORIZON_HOURS + 1]
+    return mpc.run()
 
 
 def simulate_control(
     base_hour: int,
     previous_control: list[float],
+    min_temperature: float,
     control: list[float],
-) -> tuple[Simulator, pd.DataFrame]:
+) -> tuple[Simulator, pd.DataFrame, ResultEvaluation]:
     network_directory = DEFAULT_NETWORK_DIRECTORY
 
     horizon_hours = FULL_DAY_HORIZON_HOURS
@@ -239,7 +307,8 @@ def simulate_control(
         previous_demands,
         horizon_hours * HOURS,
         0,
-        MIN_TEMPERATURE,
+        0,
+        min_temperature,
     )
     simulator.set_demands(future_demands)
 
@@ -249,18 +318,30 @@ def simulate_control(
     result_file.parent.mkdir(parents=True, exist_ok=True)
     simulator._export_outputs(Path("evaluate/tmp.csv"))
     results_df = _read_output_csv(result_file)
+    evaluation = evaluate_results(
+        results_df,
+        simulator.num_time_steps,
+        len(simulator.fixed_control),
+        24,
+        0,
+        0,
+        min_temperature,
+        "C5",
+    )
 
-    return simulator, results_df
+    return simulator, results_df, evaluation
 
 
 def evaluate_control(
     base_hour: int,
     previous_control: list[float],
+    min_temperature: float,
     control: list[float],
 ) -> Evaluation:
-    simulator, results_df = simulate_control(
+    simulator, results_df, evaluation = simulate_control(
         base_hour,
         previous_control,
+        min_temperature,
         control,
     )
 
@@ -285,6 +366,10 @@ def evaluate_control(
         control,
         objective,
         modified_objective,
+        evaluation.heat_fed_in,
+        evaluation.heat_delivered,
+        evaluation.heat_loss,
+        evaluation.pump_energy,
         maximum,
         float(area),
     )
@@ -295,16 +380,32 @@ def evaluate_day_optimization_results(
 ) -> DayEvaluations:
     base_hour = day_optimization_results.base_hour
     previous_control_no_buffer = day_optimization_results.previous_control_no_buffer
+    previous_control_w_buffer = day_optimization_results.previous_control_w_buffer
+    previous_control_curve = day_optimization_results.previous_control_curve
 
     evaluation_open_loop_forecasted = evaluate_control(
         base_hour,
         previous_control_no_buffer,
+        MIN_TEMPERATURE,
         day_optimization_results.control_open_loop_forecasted,
+    )
+    evaluation_open_loop_forecasted_w_buffer = evaluate_control(
+        base_hour,
+        previous_control_w_buffer,
+        MIN_TEMPERATURE_W_BUFFER,
+        day_optimization_results.control_open_loop_forecasted_w_buffer,
     )
     evaluation_mpc_no_buffer = evaluate_control(
         base_hour,
         previous_control_no_buffer,
+        MIN_TEMPERATURE,
         day_optimization_results.control_mpc_no_buffer,
+    )
+    evaluation_curve = evaluate_control(
+        base_hour,
+        previous_control_curve,
+        MIN_TEMPERATURE,
+        day_optimization_results.control_curve,
     )
 
     return DayEvaluations(
@@ -312,7 +413,9 @@ def evaluate_day_optimization_results(
         base_hour,
         previous_control_no_buffer,
         evaluation_open_loop_forecasted,
+        evaluation_open_loop_forecasted_w_buffer,
         evaluation_mpc_no_buffer,
+        evaluation_curve,
     )
 
 
@@ -347,6 +450,10 @@ class Distribution:
 class StrategyDistributions:
     objective: Distribution
     modified_objective: Distribution
+    heat_fed_in: Distribution
+    heat_delivered: Distribution
+    heat_loss: Distribution
+    pump_energy: Distribution
     maximum: Distribution
     area: Distribution
 
@@ -357,6 +464,7 @@ class StrategyImprovements:
     objective: list[float]
     modified_objective: list[float]
     maximum: list[float]
+    pump_energy: list[float]
     area: list[float]
     distributions: StrategyDistributions
 
@@ -364,8 +472,10 @@ class StrategyImprovements:
 @dataclass
 class MultiDayDistributions:
     open_loop_forecasted: StrategyDistributions
+    open_loop_forecasted_w_buffer: StrategyDistributions
     mpc_no_buffer: StrategyDistributions
     mpc_no_buffer_improvement: StrategyImprovements
+    curve: StrategyDistributions
 
 
 def evaluate_optimization_results(
@@ -376,6 +486,7 @@ def evaluate_optimization_results(
 
     if num_days:
         files = files[:num_days]
+
     for filepath in files:
         with filepath.open() as f:
             day_optimization_results = from_json(DayOptimizationResults, f.read())
@@ -389,7 +500,9 @@ def evaluate_optimization_results(
 
 STRATEGIES = (
     "open_loop_forecasted",
+    "open_loop_forecasted_w_buffer",
     "mpc_no_buffer",
+    "curve",
 )
 
 
@@ -411,13 +524,23 @@ def compute_evaluation_distributions(
 
         days.append(day_evaluations.day)
         by_strategy["open_loop_forecasted"].append(
-            day_evaluations.evaluation_open_loop_forecasted
+            day_evaluations.evaluation_open_loop_forecasted,
+        )
+        by_strategy["open_loop_forecasted_w_buffer"].append(
+            day_evaluations.evaluation_open_loop_forecasted_w_buffer,
         )
         by_strategy["mpc_no_buffer"].append(day_evaluations.evaluation_mpc_no_buffer)
+        by_strategy["curve"].append(day_evaluations.evaluation_curve)
 
     def _strategy_distributions(evaluations: list[Evaluation]) -> StrategyDistributions:
         return StrategyDistributions(
             objective=Distribution.from_values([e.objective for e in evaluations]),
+            heat_fed_in=Distribution.from_values([e.heat_fed_in for e in evaluations]),
+            heat_delivered=Distribution.from_values(
+                [e.heat_delivered for e in evaluations]
+            ),
+            heat_loss=Distribution.from_values([e.heat_loss for e in evaluations]),
+            pump_energy=Distribution.from_values([e.pump_energy for e in evaluations]),
             modified_objective=Distribution.from_values(
                 [e.modified_objective for e in evaluations]
             ),
@@ -436,6 +559,21 @@ def compute_evaluation_distributions(
             b.modified_objective - i.modified_objective
             for b, i in zip(baseline, improved, strict=True)
         ]
+        heat_fed_in = [
+            b.heat_fed_in - i.heat_fed_in
+            for b, i in zip(baseline, improved, strict=True)
+        ]
+        heat_delivered = [
+            b.heat_delivered - i.heat_delivered
+            for b, i in zip(baseline, improved, strict=True)
+        ]
+        heat_loss = [
+            b.heat_loss - i.heat_loss for b, i in zip(baseline, improved, strict=True)
+        ]
+        pump_energy = [
+            b.pump_energy - i.pump_energy
+            for b, i in zip(baseline, improved, strict=True)
+        ]
         maximum = [
             b.maximum - i.maximum for b, i in zip(baseline, improved, strict=True)
         ]
@@ -445,11 +583,16 @@ def compute_evaluation_distributions(
             days,
             objective,
             modified_objective,
+            pump_energy,
             maximum,
-            area=area,
+            area,
             distributions=StrategyDistributions(
                 objective=Distribution.from_values(objective),
                 modified_objective=Distribution.from_values(modified_objective),
+                heat_fed_in=Distribution.from_values(heat_fed_in),
+                heat_delivered=Distribution.from_values(heat_delivered),
+                heat_loss=Distribution.from_values(heat_loss),
+                pump_energy=Distribution.from_values(pump_energy),
                 maximum=Distribution.from_values(maximum),
                 area=Distribution.from_values(area),
             ),
@@ -457,13 +600,17 @@ def compute_evaluation_distributions(
 
     return MultiDayDistributions(
         open_loop_forecasted=_strategy_distributions(
-            by_strategy["open_loop_forecasted"]
+            by_strategy["open_loop_forecasted"],
+        ),
+        open_loop_forecasted_w_buffer=_strategy_distributions(
+            by_strategy["open_loop_forecasted_w_buffer"],
         ),
         mpc_no_buffer=_strategy_distributions(by_strategy["mpc_no_buffer"]),
         mpc_no_buffer_improvement=_improvements(
             by_strategy["open_loop_forecasted"],
             by_strategy["mpc_no_buffer"],
         ),
+        curve=_strategy_distributions(by_strategy["curve"]),
     )
 
 
@@ -491,9 +638,10 @@ def simulate_and_plot_results(
         with open(filepath) as f:
             day_optimization_results = from_json(DayOptimizationResults, f.read())
 
-        _, open_loop_result_df = simulate_control(
+        _, open_loop_result_df, _ = simulate_control(
             day_optimization_results.base_hour,
             day_optimization_results.previous_control_no_buffer,
+            MIN_TEMPERATURE,
             day_optimization_results.control_open_loop_forecasted,
         )
         visualize.plot_simulation_result(
@@ -503,9 +651,23 @@ def simulate_and_plot_results(
             MIN_TEMPERATURE,
         )
 
-        _, mpc_no_buffer_result_df = simulate_control(
+        _, open_loop_w_buffer_result_df, _ = simulate_control(
+            day_optimization_results.base_hour,
+            day_optimization_results.previous_control_w_buffer,
+            MIN_TEMPERATURE_W_BUFFER,
+            day_optimization_results.control_open_loop_forecasted_w_buffer,
+        )
+        visualize.plot_simulation_result(
+            open_loop_w_buffer_result_df,
+            output_directory
+            / f"open-loop-forecasted-w-buffer-day{day_optimization_results.day:02d}.png",
+            MIN_TEMPERATURE,
+        )
+
+        _, mpc_no_buffer_result_df, _ = simulate_control(
             day_optimization_results.base_hour,
             day_optimization_results.previous_control_no_buffer,
+            MIN_TEMPERATURE,
             day_optimization_results.control_mpc_no_buffer,
         )
         visualize.plot_simulation_result(
@@ -514,3 +676,107 @@ def simulate_and_plot_results(
             / f"mpc-no-buffer-day{day_optimization_results.day:02d}.png",
             MIN_TEMPERATURE,
         )
+
+
+def compute_mpc_compute_time_statistics(
+    data_directory: Path,
+    num_days: Optional[int] = None,
+) -> None:
+    files = sorted(data_directory.glob("day-optimization-results-*.json"))
+
+    if num_days:
+        files = files[:num_days]
+
+    times = []
+    iterations = []
+    successes = []
+    stati = []
+    messages = []
+
+    for filepath in files:
+        with filepath.open() as f:
+            day_optimization_results = from_json(DayOptimizationResults, f.read())
+
+        times += day_optimization_results.times_mpc
+        iterations += day_optimization_results.iterations_mpc
+        successes += day_optimization_results.successes_mpc
+        stati += day_optimization_results.stati_mpc
+        messages += day_optimization_results.messages_mpc
+
+    logger.info("name\tmin\tmax\tmean\tmeadian\tlen")
+
+    def print_statistics(numbers: Sequence[float], name: str) -> None:
+        logger.info(
+            f"{name}\t{min(numbers)}\t{max(numbers)}\t{np.mean(numbers)}\t{np.median(numbers)}\t{len(numbers)}"
+        )
+
+    print_statistics(times, "times")
+    print_statistics(iterations, "iterations")
+
+    logger.info(f"success rate: {sum(successes) / len(successes)}")
+
+    index_max = times.index(max(times))
+    logger.info(
+        f"the maximum time is {times[index_max]} with {iterations[index_max]} iterations and message '{messages[index_max]}'"
+    )
+
+    times.sort()
+    iterations.sort()
+    logger.debug(f"times sorted: {times}")
+    logger.debug(f"iterations sorted: {iterations}")
+
+
+def compute_overall_energy(
+    data_directory: Path,
+    num_days: Optional[int] = None,
+) -> None:
+    files = sorted(data_directory.glob("day-evaluations-*.json"))
+
+    if num_days:
+        files = files[:num_days]
+
+    @dataclass
+    class ReportedMeasurements:
+        heat_fed_in: float = 0
+        heat_delivered: float = 0
+        heat_loss: float = 0
+        pump_energy: float = 0
+
+    @dataclass
+    class StrategyMeasurements:
+        curve: ReportedMeasurements
+        open_loop: ReportedMeasurements
+        open_loop_w_buffer: ReportedMeasurements
+        mpc: ReportedMeasurements
+
+    measurements = StrategyMeasurements(
+        ReportedMeasurements(),
+        ReportedMeasurements(),
+        ReportedMeasurements(),
+        ReportedMeasurements(),
+    )
+
+    def add_evaluation(reported: ReportedMeasurements, evaluation: Evaluation) -> None:
+        reported.heat_fed_in += evaluation.heat_fed_in
+        reported.heat_delivered += evaluation.heat_delivered
+        reported.heat_loss += evaluation.heat_loss
+        reported.pump_energy += evaluation.pump_energy
+
+    for filepath in files:
+        with filepath.open() as f:
+            day_evaluations = from_json(DayEvaluations, f.read())
+
+        add_evaluation(measurements.curve, day_evaluations.evaluation_curve)
+        add_evaluation(measurements.mpc, day_evaluations.evaluation_mpc_no_buffer)
+        add_evaluation(
+            measurements.open_loop,
+            day_evaluations.evaluation_open_loop_forecasted,
+        )
+        add_evaluation(
+            measurements.open_loop_w_buffer,
+            day_evaluations.evaluation_open_loop_forecasted_w_buffer,
+        )
+
+    logger.info(
+        f"energy in sum:\ncurve: {measurements.curve}\nopen-loop: {measurements.open_loop}\nopen-loop w/ buffer: {measurements.open_loop_w_buffer}\nmpc: {measurements.mpc}"
+    )

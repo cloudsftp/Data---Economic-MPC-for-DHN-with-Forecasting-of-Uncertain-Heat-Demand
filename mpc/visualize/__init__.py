@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 import math
+import json
 
 from loguru import logger
 
@@ -150,7 +151,7 @@ def plot_simulation_result(
     ax1.xaxis.set_major_locator(MultipleLocator(1))
 
     ax1.set_ylabel("feed temperature [°C]")
-    ax1.set_ylim(69, 75)
+    ax1.set_ylim(69, 79)
     energy_density_columns = [
         "S0.1.e",
         "C3.0.e",
@@ -226,7 +227,9 @@ def plot_horizon_performance_indices(
         label="absolute performance index",
     )
     ax1.set_ylabel("performance index")
-    ax1.set_yscale("log")
+    ax1.set_ylim(-5.0e1, -1.2e3)
+    ax1.yaxis.set_inverted(True)
+    ax1.set_yscale("symlog")
 
     ax2 = ax1.twinx()
 
@@ -235,7 +238,7 @@ def plot_horizon_performance_indices(
         times,
         color=FRAUNHOFERGREEN,
         marker="s",
-        label="average optimization time",
+        label="median optimization time",
     )
     ax2.set_ylabel("optimization time [s]")
 
@@ -251,30 +254,41 @@ def plot_evaluation_distributions(
     output_figure_file: Path,
 ) -> None:
     strategies = [
-        ("open-loop", distributions.open_loop_forecasted),
-        ("MPC", distributions.mpc_no_buffer),
+        ("temperature\ncurve", distributions.curve),
+        ("open-\nloop", distributions.open_loop_forecasted),
+        # ("open-loop\nw/ buffer", distributions.open_loop_forecasted_w_buffer),
+        ("NMPC", distributions.mpc_no_buffer),
     ]
     metrics = [
         (
-            "Objective function value",
-            "modified_objective",
-            "objective function value [1]",
+            "Heat loss",
+            "heat_loss",
+            "energy [Wh]",
+            6,
+        ),
+        (
+            "Pump energy",
+            "pump_energy",
+            "energy [Wh]",
+            3,
         ),
         (
             "Maximum violation",
             "maximum",
             "temperature [K]",
+            0,
         ),
-        (
-            "Violation area",
-            "area",
-            "temperature with time [K h]",
-        ),
+        # (
+        #    "Violation area",
+        #    "area",
+        #    "temperature with time [Kh]",
+        #    0,
+        # ),
     ]
 
     fig, axes = plt.subplots(1, len(metrics), figsize=(12, 5), constrained_layout=True)
 
-    for ax, (title, attribute, ylabel) in zip(axes, metrics):
+    for ax, (title, attribute, ylabel, texp) in zip(axes, metrics):
         stats = []
         for label, strategy_distributions in strategies:
             distribution = getattr(strategy_distributions, attribute)
@@ -290,6 +304,8 @@ def plot_evaluation_distributions(
                     "fliers": [],
                 }
             )
+
+        logger.info(f"{title}:\n{json.dumps(stats, indent=2)}")
 
         boxplot = ax.bxp(stats, showmeans=True, showfliers=False, patch_artist=True)
         for box in boxplot["boxes"]:
@@ -308,6 +324,8 @@ def plot_evaluation_distributions(
         ax.set_ylabel(ylabel)
         ax.tick_params(axis="x")
         ax.grid(axis="y", color=SILVERGREY, alpha=0.35)
+
+        ax.ticklabel_format(axis="y", style="sci", scilimits=(texp, texp))
 
     output_figure_file.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_figure_file)

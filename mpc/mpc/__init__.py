@@ -19,22 +19,32 @@ class MPCResult:
 
     times: list[float]
     iterations: list[int]
+    successes: list[bool]
+    stati: list[int]
+    messages: list[str]
 
     @staticmethod
     def from_optimal_controls(
         optimal_controls: list[list[float]],
         times: list[float],
         iterations: list[int],
+        successes: list[bool],
+        stati: list[int],
+        messages: list[str],
+        state_update_hours: int,
     ) -> MPCResult:
         optimal_control = [optimal_controls[0][0]]
         for i in range(len(optimal_controls)):
-            optimal_control.append(optimal_controls[i][1])
+            optimal_control += optimal_controls[i][1 : state_update_hours + 1]
 
         return MPCResult(
             optimal_controls,
             optimal_control,
             times,
             iterations,
+            successes,
+            stati,
+            messages,
         )
 
 
@@ -50,6 +60,8 @@ class MPC:
     objective_short_values: list[float]
     ells: list[float]
 
+    state_update_hours: int
+
     def __init__(
         self,
         network_directory: Path,
@@ -61,6 +73,7 @@ class MPC:
         horizon_hours: int,
         num_steps: int,
         min_temperature: float,
+        state_update_hours: int = 1,
     ) -> None:
         previous_control = previous_control_temperatures
         initial_control = [initial_control_temperature] * num_controls
@@ -99,16 +112,18 @@ class MPC:
 
         self.mpc_steps = num_steps
 
+        self.state_update_hours = state_update_hours
+
     def visualize_iteration_progress(self, update: OptimizerUpdate):
         visualize.plot_control(
             update.current_control,
             self.optimizer._demands,
-            Path(f"results/control_{update.iteration}.png"),
+            Path(f"results/control_{update.iteration:02d}.png"),
         )
 
         visualize.plot_simulation_result(
             update.simulation_result,
-            Path(f"results/simulation_temperatures_{update.iteration}.png"),
+            Path(f"results/simulation_temperatures_{update.iteration:02d}.png"),
         )
 
     def run(self) -> MPCResult:
@@ -117,9 +132,12 @@ class MPC:
         optimal_controls = []
         times = []
         iterations = []
+        successes = []
+        stati = []
+        messages = []
 
-        for step in range(self.mpc_steps):
-            logger.info(f"\n===== MPC step {step} =====")
+        for step in range(0, self.mpc_steps, self.state_update_hours):
+            logger.info(f"\n===== MPC step at hour {step} =====")
             optimization_result = self.optimizer.optimize()
             logger.info(
                 f"success: {optimization_result.optimized}, control: {optimization_result.control}"
@@ -128,6 +146,9 @@ class MPC:
             optimal_controls.append(optimization_result.control)
             times.append(optimization_result.time)
             iterations.append(optimization_result.iterations)
+            successes.append(optimization_result.success)
+            stati.append(optimization_result.status)
+            messages.append(optimization_result.message)
 
             actual_demands = self.demand_provider.get_actual_future_demands()
             self.demand_provider.advance_step()
@@ -140,6 +161,12 @@ class MPC:
             )
 
             self.optimizer.advance_step(actual_demands, predicted_demands)
+            for _ in range(self.state_update_hours - 1):
+                actual_demands = self.demand_provider.get_actual_future_demands()
+                self.demand_provider.advance_step()
+                predicted_demands = self.demand_provider.get_predicted_future_demands()
+
+                self.optimizer.advance_step(actual_demands, predicted_demands)
 
             # just for visualization
             self._objective_values = []
@@ -148,4 +175,8 @@ class MPC:
             optimal_controls,
             times,
             iterations,
+            successes,
+            stati,
+            messages,
+            self.state_update_hours,
         )
